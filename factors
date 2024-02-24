@@ -2,24 +2,22 @@
 
 import sys
 import time
+import math
 
-def calculate_factors(current_number):
-    '''Takes a number as input.
+def factorize(num):
+    '''Takes a number as input and factors it into a product of two smaller numbers.
     Args:
-        current_number: input integer.
-        Return: A tuple of two factors if the number is not a prime.
-                None if the number is prime.
+        num: input integer.
+    Returns:
+        A tuple of two factors.
     '''
-    if current_number < 2:
-        return None
-    for i in range(2, int(current_number**0.5)+1):
-        if current_number % i == 0:
-            return (i, current_number//i)
+    sqrt_num = int(math.sqrt(num))
+    for i in range(2, sqrt_num + 1):
+        if num % i == 0:
+            return (i, num // i)
     return None
 
 if __name__ == "__main__":
-    '''Reads the input file.
-    '''
     if len(sys.argv) != 2:
         print("Usage: factors <file>")
         exit()
@@ -27,27 +25,20 @@ if __name__ == "__main__":
     input_file = sys.argv[1]
 
     try:
-        with open(input_file, 'r') as input_file:
-            lines = input_file.readlines()
+        with open(input_file, 'r') as f:
+            lines = f.readlines()
     except FileNotFoundError:
         print("File not found")
         exit()
 
     start_time = time.time()
 
-    '''loops over each line (which should contain one natural number per line),
-        and calls calculate_factors on each number.
-        If calculate_factors returns a tuple of factors,
-        it prints the factorization in the desired format.
-    '''
     for line in lines:
-        current_number = int(line.strip())
-        factor_pair = calculate_factors(current_number)
-        if factor_pair:
-            print(f"{current_number}={factor_pair[0]}*{factor_pair[1]}")
+        num = int(line.strip())
+        factors = factorize(num)
+        if factors:
+            print(f"{num}={factors[0]}*{factors[1]}")
 
-        '''Check elapsed time periodically and exit loop if exceeded.
-        '''
         if time.time() - start_time > 5:
             print("Time limit exceeded")
             exit()
