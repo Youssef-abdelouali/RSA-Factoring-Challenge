@@ -1,55 +1,64 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import sys
+import random
+import time
+import math
 
-# Function to check if a number is prime
-def is_prime(n):
-    if n <= 1:
+def is_prime(number, iterations=20):
+    if number < 2:
         return False
-    if n <= 3:
+    if number < 4:
         return True
-    if n % 2 == 0 or n % 3 == 0:
+    if number % 2 == 0:
         return False
-    i = 5
-    while i * i <= n:
-        if n % i == 0 or n % (i + 2) == 0:
+
+    # Miller-Rabin primality test
+    d = number - 1
+    r_value = 0
+    while d % 2 == 0:
+        d //= 2
+        r_value += 1
+
+    for _ in range(iterations):
+        a = random.randint(2, number - 2)
+        x_value = pow(a, d, number)
+        if x_value == 1 or x_value == number - 1:
+            continue
+        for _ in range(r_value - 1):
+            x_value = pow(x_value, 2, number)
+            if x_value == number - 1:
+                break
+        else:
             return False
-        i += 6
+
     return True
 
-# Function to find the prime factors of n
-def find_prime_factors(n):
-    factors = []
-    for i in range(2, n + 1):
-        if n % i == 0 and is_prime(i):
-            factors.append(i)
-            n //= i
-            while n % i == 0:
-                factors.append(i)
-                n //= i
-            if n == 1:
-                break
-    return factors
-
-# Function to format the output
-def format_output(n, factors):
-    return f"{n}={'*'.join(map(str, factors))}"
-
-# Main function to read numbers from file and find prime factors
-def main(file_path):
-    with open(file_path, 'r') as file:
-        numbers = file.readlines()
-
-    for number in numbers:
-        n = int(number.strip())
-        factors = find_prime_factors(n)
-        print(format_output(n, factors))
-
-# Check if the script is being run as the main program
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: ./rsa <file>")
-        sys.exit(1)
-    file_path = sys.argv[1]
-    main(file_path)
+        print("Usage: rsa <file>")
+        exit()
+
+    input_file_name = sys.argv[1]
+
+    try:
+        with open(input_file_name, 'r') as file:
+            lines = file.readlines()
+    except FileNotFoundError:
+        print("File not found")
+        exit()
+
+    start_time = time.time()
+
+    number_value = int(lines[0].strip())
+
+    sqrt_number = int(math.isqrt(number_value)) + 1
+    for i in range(2, sqrt_number):
+        if number_value % i == 0 and is_prime(i) and is_prime(number_value // i):
+            print(f"{number_value}={i}*{number_value//i}")
+            break
+
+    if time.time() - start_time > 5:
+        print("Time limit exceeded")
+        exit()
 
