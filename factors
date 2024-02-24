@@ -1,50 +1,7 @@
-#!/usr/bin/python
-
-import sys
-
-# Function to factorize a number
-def factorize(n):
-    factors = []
-    # Iterate through numbers from 2 to the square root of n
-    for i in range(2, int(n**0.5) + 1):
-        # Check if i is a factor of n
-        while n % i == 0:
-            # If i is a factor, add it to the list of factors and update n
-            factors.append(i)
-            n //= i
-    # If n is still greater than 1, it is a prime factor
-    if n > 1:
-        factors.append(n)
-    return factors
-
-# Function to format the output as required
-def format_output(n, factors):
-    return f"{n}={'*'.join(map(str, factors[:2]))}"
-
-# Main function to read numbers from file and factorize them
-def main(file_path):
-    # Open the file for reading
-    with open(file_path, 'r') as file:
-        # Read all lines from the file
-        numbers = file.readlines()
-
-    # Iterate through each number in the file
-    for number in numbers:
-        # Convert the number to an integer
-        n = int(number.strip())
-        # Factorize the number
-        factors = factorize(n)
-        # Format and print the output
-        print(format_output(n, factors))
-
-# Check if the script is being run as the main program
-if __name__ == "__main__":
-    # Check if the correct number of arguments is provided
-    if len(sys.argv) != 2:
-        print("Usage: ./factors <file>")
-        sys.exit(1)
-    # Get the file path from the command line arguments
-    file_path = sys.argv[1]
-    # Call the main function with the file path
-    main(file_path)
-
+#!/usr/bin/bash
+FILE=$1
+while read Num_ber;
+do
+    factors=($(factor $Num_ber))
+    echo "$Num_ber=$(($Num_ber/${factors[1]}))*${factors[1]}"
+done < $FILE    
